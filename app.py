@@ -13,7 +13,9 @@ from prophet import Prophet
 app = FastAPI()
 
 # --- Redis ---
-rdb = redis.Redis(host="localhost", port=6379, decode_responses=True)
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = int(os.getenv("REDIS_PORT", 6379))
+rdb = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
 
 # --- Mount static files ---
 app.mount("/static", StaticFiles(directory="static"), name="static")
