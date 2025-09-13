@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/brieleon/anomaly-webapp
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: ghcr-auth
+  
+service:
+  type: LoadBalancer
+  ports:
+    web:
+      port: 8082
+      targetPort: 8082
+    
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: anomaly-detector.iobay.net
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: anomaly-webapp-tls
+      hosts:
+        - anomaly-detector.iobay.net
+
+env:
+  REDIS_HOST: "redis-master.anomaly-system.svc.cluster.local"
+  REDIS_PORT: "6379"

@@ -1,0 +1,18 @@
+# --- Core App Dependencies ---
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+
+# --- Redis Client ---
+redis==5.0.4
+
+# --- Data Handling ---
+pandas==2.2.2
+
+# --- Forecasting ---
+prophet==1.1.5
+
+# --- Plotting (optional, if plotting inside backend) ---
+matplotlib==3.8.4
+
+# --- Optional: to handle date parsing errors etc.
+python-dateutil==2.9.0.post0
