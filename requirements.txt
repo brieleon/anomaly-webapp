@@ -6,11 +6,11 @@ uvicorn[standard]==0.29.0
 redis==5.0.4
 
 # --- Data Handling ---
-numpy<2.0
+numpy==1.24.4
 pandas==2.2.2
 
 # --- Forecasting ---
-prophet==1.1.5
+prophet==1.1.7
 
 # --- Plotting (optional, if plotting inside backend) ---
 matplotlib==3.8.4
