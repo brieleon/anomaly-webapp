@@ -19,11 +19,6 @@ COPY requirements.txt .
 
 # Upgrade pip first
 RUN pip install --upgrade pip
-
-# Force reinstall numpy first to pin version
-RUN pip install --force-reinstall numpy==1.24.4
-
-# Install the rest of your dependencies
 RUN pip install -r requirements.txt
 
 # Copy all your app source code
