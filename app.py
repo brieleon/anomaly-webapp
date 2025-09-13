@@ -5,6 +5,7 @@ import json, redis, asyncio
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
+np.float_ = np.float64  # Fix for Prophet compatibility
 from prophet import Prophet
 
 
