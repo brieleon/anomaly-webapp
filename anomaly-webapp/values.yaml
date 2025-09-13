@@ -39,5 +39,5 @@ ingress:
         - anomaly-detector.iobay.net
 
 env:
-  REDIS_HOST: "redis-master.anomaly-system.svc.cluster.local"
+  REDIS_HOST: "anomaly-orchestrator-redis-master-master.anomaly-system.svc.cluster.local"
   REDIS_PORT: "6379"

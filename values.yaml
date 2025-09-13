@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/brieleon/anomaly-webapp
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   pullSecrets:
     - name: ghcr-auth
 
@@ -31,7 +31,7 @@ ingress:
   hosts:
     - host: anomaly-detector.iobay.net
       paths:
-        - path: /
+        - path: /webapp
           pathType: Prefix
   tls:
     - secretName: anomaly-webapp-tls
@@ -39,5 +39,5 @@ ingress:
         - anomaly-detector.iobay.net
 
 env:
-  REDIS_HOST: "redis-master.anomaly-system.svc.cluster.local"
+  REDIS_HOST: "anomaly-orchestrator-redis-master-master.anomaly-system.svc.cluster.local"
   REDIS_PORT: "6379"
