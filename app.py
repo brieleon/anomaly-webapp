@@ -5,11 +5,6 @@ import json, redis, asyncio
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
-
-# --- Monkey-patch for Prophet compatibility with NumPy 2.0 ---
-if not hasattr(np, 'float_'):
-    np.float_ = np.float64
-
 from prophet import Prophet
 
 
