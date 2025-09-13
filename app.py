@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import json, redis, asyncio
+import os
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
