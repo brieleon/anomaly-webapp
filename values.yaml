@@ -6,14 +6,25 @@ image:
   pullPolicy: IfNotPresent
   pullSecrets:
     - name: ghcr-auth
-  
+
+ 
+serviceAccount:
+  create: true
+  name: ""
+ 
 service:
   type: LoadBalancer
   ports:
     web:
       port: 8082
       targetPort: 8082
-    
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
 ingress:
   enabled: true
   className: nginx

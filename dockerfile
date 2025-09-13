@@ -24,8 +24,11 @@ RUN pip install -r requirements.txt
 # Copy all your app source code
 COPY . .
 
-# Expose port 8082 as you mentioned
+# Set environment variable to avoid matplotlib cache warning
+ENV MPLCONFIGDIR=/tmp/.matplotlib
+
+# Expose port 8082
 EXPOSE 8082
 
-# Use exec form for CMD to avoid shell wrapping
+# Start the application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8082"]
