@@ -1,0 +1,8 @@
+project/
+│
+├─ app.py
+├─ static/
+│   ├─ style.css
+│   └─ dashboard.js
+└─ templates/
+    └─ dashboard.html
