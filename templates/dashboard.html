@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Interactive RTP Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive RTP Dashboard - Game Data</title>
     <link rel="stylesheet" href="/webapp/static/style.css">
     <script src="https://cdn.plot.ly/plotly-2.25.1.min.js"></script>
     <script src="/webapp/static/dashboard.js" defer></script>
 </head>
 <body>
-    <h1>&#x1F4CA; Interactive RTP Dashboard</h1>
-    <div class="selector-container">
-        <label for="pairSelect">Select Game-Vendor Pair</label>
-        <select id="pairSelect"><option value="all">All</option></select>
-    </div>
-    <div id="charts"></div>
+    <header>
+        <h1>&#x1F4CA; Interactive RTP Dashboard</h1>
+    </header>
+    
+    <main>
+        <!-- Game-Vendor Pair Selector -->
+        <div class="selector-container">
+            <label for="pairSelect">Select Game-Vendor Pair</label>
+            <select id="pairSelect">
+                <option value="all">All</option>
+            </select>
+        </div>
+
+        <!-- Placeholder for dynamically generated charts -->
+        <div id="charts"></div>
+    </main>
+
+    <!-- Optional Footer (if needed) -->
+    
+    <footer>
+        <p>&copy; 2025 RTP Dashboard. All rights reserved.</p>
+    </footer>
+
 </body>
 </html>
-
-
-
-
-

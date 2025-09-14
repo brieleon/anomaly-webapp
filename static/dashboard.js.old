@@ -39,6 +39,7 @@ function connectWebSocket() {
 
         // Ignore pong messages (heartbeat)
         if (allData.action === "pong") {
+            // Optionally: console.log("Pong received");
             return;
         }
 
@@ -102,12 +103,9 @@ function redrawCharts(allData) {
                 // If there's a focused chart, unfocus it first
                 if (focusedChart) {
                     focusedChart.classList.remove("full-screen");
-
-                    // Clear inline overrides so CSS rules apply again
-                    focusedChart.style.width = "";
-                    focusedChart.style.height = "";
-                    focusedChart.style.flex = "1";
-
+                    focusedChart.style.width = focusedChart.dataset.originalWidth;
+                    focusedChart.style.height = focusedChart.dataset.originalHeight;
+                    focusedChart.style.flex = "1"; // restore flex
                     const prevInnerChartDiv = focusedChart.querySelector(".chart > div:last-child");
                     if (prevInnerChartDiv) Plotly.Plots.resize(prevInnerChartDiv);
 
@@ -116,25 +114,25 @@ function redrawCharts(allData) {
                         focusedChart = null;
                         focusedKey = null;
                         focusedChartType = null;
-                        document.body.classList.remove("full-screen-active");
+                        document.body.style.overflow = "auto";
                         return;
                     }
 
                     focusedChart = null;
                     focusedKey = null;
                     focusedChartType = null;
-                    document.body.classList.remove("full-screen-active");
+                    document.body.style.overflow = "auto";
                 }
 
                 // Focus this chart
                 focusedChart = container;
-                focusedChart.style.width = "100%";
-                focusedChart.style.height = "100%";
-                focusedChart.style.flex = "none";
+                focusedChart.dataset.originalWidth = container.style.width || container.offsetWidth + "px";
+                focusedChart.dataset.originalHeight = container.style.height || container.offsetHeight + "px";
+                focusedChart.style.flex = "none"; // remove flex restriction
                 container.classList.add("full-screen");
                 focusedKey = key;
                 focusedChartType = chartType;
-                document.body.classList.add("full-screen-active");
+                document.body.style.overflow = "hidden";
 
                 const innerChartDiv = container.querySelector(".chart > div:last-child");
                 if (innerChartDiv) {
@@ -160,7 +158,7 @@ function redrawCharts(allData) {
                 if (focusedKey === key && focusedChartType === chartType) {
                     container.classList.add("full-screen");
                     focusedChart = container;
-                    document.body.classList.add("full-screen-active"); // ✅ fixed
+                    document.body.style.overflow = "hidden";
                     Plotly.Plots.resize(chartDiv);
                 }
             }, 0);

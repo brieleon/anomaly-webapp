@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive RTP Dashboard</title>
+    <link rel="stylesheet" href="/webapp/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-2.25.1.min.js"></script>
+    <script src="/webapp/static/dashboard.js" defer></script>
+</head>
+<body>
+    <h1>&#x1F4CA; Interactive RTP Dashboard</h1>
+    <div class="selector-container">
+        <label for="pairSelect">Select Game-Vendor Pair</label>
+        <select id="pairSelect"><option value="all">All</option></select>
+    </div>
+    <div id="charts"></div>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,120 @@
+/* --- General Body --- */
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 10px; 
+    text-align: center; /* center h1 and selector-container */
+}
+
+/* --- Dashboard Title --- */
+h1 {
+    font-size: 2.5em; /* bigger dashboard title */
+    margin-bottom: 20px;
+}
+
+/* --- Selector Container --- */
+.selector-container {
+    display: flex;            /* horizontal layout */
+    align-items: center;      /* vertical alignment */
+    justify-content: center;  /* center horizontally */
+    gap: 20px;                /* space between label and select */
+    margin-bottom: 30px;      /* spacing below selector */
+    font-size: 32px;          /* double default size */
+}
+
+.selector-container label,
+.selector-container select {
+    font-size: 1em;           /* inherit container font size */
+}
+
+.selector-container select {
+    padding: 10px 15px;       /* bigger clickable area */
+}
+
+/* --- Chart Row --- */
+.row { 
+    display: flex; 
+    margin-bottom: 20px; 
+    gap: 10px; 
+}
+
+/* --- Chart Container --- */
+.chart { 
+    flex: 1; 
+    border: 1px solid #ccc; 
+    padding: 5px; 
+    position: relative; 
+    height: 400px; 
+    transition: all 0.3s ease;
+}
+
+/* --- Chart Header --- */
+.chart-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 5px; 
+}
+
+.chart-title { 
+    font-weight: bold; 
+    font-size: 18px;
+}
+
+/* --- Focus Button --- */
+.focus-button { 
+    padding: 6px 15px; 
+    font-size: 18px; 
+    border-radius: 6px; 
+    cursor: pointer;
+}
+
+/* --- Fullscreen Chart --- */
+.full-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    background: white !important;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.full-screen .chart {
+    flex: 1;
+    height: 100% !important; /* fill fullscreen height */
+    margin: 0 !important;
+    border: none !important;
+    padding: 10px !important;
+}
+
+.full-screen .chart-header {
+    flex: none;
+    height: 40px;
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.full-screen .chart > div:last-child {
+    flex: 1;
+    height: auto !important;
+}
+
+/* --- Plotly Modebar --- */
+.js-plotly-plot .modebar-btn svg {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.js-plotly-plot .modebar-btn {
+    margin: 3px !important;
+}
+
+.js-plotly-plot .modebar {
+    top: 10px !important;
+}
