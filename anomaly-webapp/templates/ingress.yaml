@@ -6,8 +6,6 @@ metadata:
   namespace: anomaly-system
   labels:
     {{- include "anomaly-webapp.labels" . | nindent 4 }}
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
