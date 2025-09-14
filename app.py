@@ -32,7 +32,7 @@ async def root_redirect():
     return RedirectResponse(url="/webapp")
 
 # --- WebSocket endpoint remains the same ---
-@app.websocket("/ws")
+@app.websocket("/webapp/ws")
 async def websocket_endpoint(ws: WebSocket):
     await ws.accept()
     try:

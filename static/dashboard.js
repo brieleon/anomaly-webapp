@@ -1,4 +1,6 @@
-const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`);
+//const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`);
+const ws = new WebSocket("wss://" + window.location.host + "/webapp/ws");
+
 const pairSelect = document.getElementById("pairSelect");
 
 // Load selected pair from localStorage or default to "all"
