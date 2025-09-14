@@ -1,67 +1,14 @@
+//const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`);
+const ws = new WebSocket("wss://" + window.location.host + "/webapp/ws");
+
 const pairSelect = document.getElementById("pairSelect");
 
 // Load selected pair from localStorage or default to "all"
 let selectedPair = localStorage.getItem("selectedPair") || "all";
 
-let ws;
-let reconnectTimeout = null;
-const RECONNECT_DELAY = 5000; // 5 seconds
-let pingInterval;
-
 let focusedChart = null;
 let focusedKey = null;
 let focusedChartType = null;
-
-function connectWebSocket() {
-    ws = new WebSocket((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + "/webapp/ws");
-
-    ws.onopen = () => {
-        console.log("WebSocket connected");
-
-        if (reconnectTimeout) {
-            clearTimeout(reconnectTimeout);
-            reconnectTimeout = null;
-        }
-
-        // Send initial refresh after connection opens
-        ws.send(JSON.stringify({ action: "refresh" }));
-
-        // Start ping every 30s
-        pingInterval = setInterval(() => {
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ action: "ping" }));
-            }
-        }, 30000);
-    };
-
-    ws.onmessage = (event) => {
-        const allData = JSON.parse(event.data);
-
-        // Ignore pong messages (heartbeat)
-        if (allData.action === "pong") {
-            // Optionally: console.log("Pong received");
-            return;
-        }
-
-        window.lastAllData = allData;  // store latest data
-        redrawCharts(allData);
-    };
-
-    ws.onerror = (event) => {
-        console.error("WebSocket error:", event);
-    };
-
-    ws.onclose = () => {
-        clearInterval(pingInterval);
-        console.warn("WebSocket closed. Reconnecting in 5 seconds...");
-        if (!reconnectTimeout) {
-            reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY);
-        }
-    };
-}
-
-// Start WebSocket connection
-connectWebSocket();
 
 function redrawCharts(allData) {
     const chartsDiv = document.getElementById("charts");
@@ -280,16 +227,20 @@ function redrawCharts(allData) {
     }, 100);
 }
 
-// Set initial dropdown value
-pairSelect.value = selectedPair;
+// WebSocket events
+ws.onmessage = function (event) {
+    const allData = JSON.parse(event.data);
+    window.lastAllData = allData;  // store latest data
+    redrawCharts(allData);
+};
 
 pairSelect.addEventListener("change", () => {
     selectedPair = pairSelect.value;
     localStorage.setItem("selectedPair", selectedPair);
     if (window.lastAllData) {
-        redrawCharts(window.lastAllData);
+        redrawCharts(window.lastAllData); // immediate redraw
     }
-    if (ws && ws.readyState === WebSocket.OPEN) {
+    if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ action: "refresh" }));
     }
 });
