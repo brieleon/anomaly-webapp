@@ -115,7 +115,7 @@ h1 {
     min-height: 300px;
 }
 
-/* Media Queries for Responsiveness */
+/* Media Queries for Responsiveness 
 @media (max-width: 768px) {
     .selector-container {
         flex-direction: column;
@@ -130,6 +130,7 @@ h1 {
         margin-bottom: 20px;
     }
 }
+*/
 
 /* Prevent Scrolling When Focused */
 body.full-screen-active {
