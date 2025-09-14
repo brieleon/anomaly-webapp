@@ -19,7 +19,9 @@ redis_port = int(os.getenv("REDIS_PORT", 6379))
 rdb = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
 
 # --- Mount static files ---
-app.mount("/static", StaticFiles(directory="static"), name="static")
+#app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/webapp/static", StaticFiles(directory="static"), name="static")
+
 
 # --- Serve HTML template ---
 @app.get("/")
