@@ -17,49 +17,29 @@ function connectWebSocket() {
 
     ws.onopen = () => {
         console.log("WebSocket connected");
-
-        if (reconnectTimeout) {
-            clearTimeout(reconnectTimeout);
-            reconnectTimeout = null;
-        }
-
-        // Send initial refresh after connection opens
+        if (reconnectTimeout) { clearTimeout(reconnectTimeout); reconnectTimeout = null; }
         ws.send(JSON.stringify({ action: "refresh" }));
-
-        // Start ping every 30s
         pingInterval = setInterval(() => {
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ action: "ping" }));
-            }
+            if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ action: "ping" }));
         }, 30000);
     };
 
     ws.onmessage = (event) => {
         const allData = JSON.parse(event.data);
-
-        // Ignore pong messages (heartbeat)
-        if (allData.action === "pong") {
-            return;
-        }
-
-        window.lastAllData = allData;  // store latest data
+        if (allData.action === "pong") return;
+        window.lastAllData = allData;
         redrawCharts(allData);
     };
 
-    ws.onerror = (event) => {
-        console.error("WebSocket error:", event);
-    };
+    ws.onerror = (event) => console.error("WebSocket error:", event);
 
     ws.onclose = () => {
         clearInterval(pingInterval);
         console.warn("WebSocket closed. Reconnecting in 5 seconds...");
-        if (!reconnectTimeout) {
-            reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY);
-        }
+        if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY);
     };
 }
 
-// Start WebSocket connection
 connectWebSocket();
 
 function redrawCharts(allData) {
@@ -90,8 +70,6 @@ function redrawCharts(allData) {
 
             const header = document.createElement("div");
             header.className = "chart-header";
-            header.style.position = "relative";
-            header.style.zIndex = "10"; // ensure buttons are above chart
             const titleEl = document.createElement("span");
             titleEl.className = "chart-title";
             titleEl.textContent = title;
@@ -100,25 +78,28 @@ function redrawCharts(allData) {
             const btn = document.createElement("button");
             btn.className = "focus-button";
             btn.textContent = "Focus";
-            btn.style.zIndex = "11"; // always above chart
             btn.onclick = () => {
-                // If there's a focused chart, unfocus it first
+                const innerDiv = container.querySelector(".chart > div:last-child");
+
+                // Unfocus existing chart
                 if (focusedChart) {
                     focusedChart.classList.remove("full-screen");
-
-                    // Restore all original inline styles
-                    focusedChart.style.width = focusedChart.dataset.originalWidth;
-                    focusedChart.style.height = focusedChart.dataset.originalHeight;
-                    focusedChart.style.flex = focusedChart.dataset.originalFlex;
-                    focusedChart.style.margin = focusedChart.dataset.originalMargin;
-                    focusedChart.style.padding = focusedChart.dataset.originalPadding;
-                    focusedChart.style.border = focusedChart.dataset.originalBorder;
+                    focusedChart.style.width = focusedChart.dataset.originalWidth || "";
+                    focusedChart.style.height = focusedChart.dataset.originalHeight || "";
+                    focusedChart.style.flex = focusedChart.dataset.originalFlex || "";
+                    focusedChart.style.margin = focusedChart.dataset.originalMargin || "";
+                    focusedChart.style.padding = focusedChart.dataset.originalPadding || "";
+                    focusedChart.style.border = focusedChart.dataset.originalBorder || "";
                     focusedChart.style.zIndex = "";
 
-                    const prevInnerChartDiv = focusedChart.querySelector(".chart > div:last-child");
-                    if (prevInnerChartDiv) Plotly.Plots.resize(prevInnerChartDiv);
+                    const prevInner = focusedChart.querySelector(".chart > div:last-child");
+                    if (prevInner) {
+                        prevInner.style.width = "100%";
+                        prevInner.style.height = "100%";
+                        Plotly.Plots.resize(prevInner);
+                    }
 
-                    // If clicking the currently focused chart, just unfocus and return
+                    // If same chart clicked, unfocus and exit
                     if (focusedChart === container) {
                         focusedChart = null;
                         focusedKey = null;
@@ -135,8 +116,10 @@ function redrawCharts(allData) {
 
                 // Focus this chart
                 focusedChart = container;
+                focusedKey = key;
+                focusedChartType = chartType;
 
-                // Store all relevant inline styles before focus
+                // Store original inline styles
                 focusedChart.dataset.originalWidth = container.style.width || "";
                 focusedChart.dataset.originalHeight = container.style.height || "";
                 focusedChart.dataset.originalFlex = container.style.flex || "";
@@ -144,18 +127,15 @@ function redrawCharts(allData) {
                 focusedChart.dataset.originalPadding = container.style.padding || "";
                 focusedChart.dataset.originalBorder = container.style.border || "";
 
-                // Apply fullscreen styles
-                focusedChart.style.flex = "none";
+                // Apply fullscreen
                 container.classList.add("full-screen");
-                focusedKey = key;
-                focusedChartType = chartType;
+                container.style.flex = "none";
                 document.body.classList.add("full-screen-active");
 
-                const innerChartDiv = container.querySelector(".chart > div:last-child");
-                if (innerChartDiv) {
-                    innerChartDiv.style.width = "100%";
-                    innerChartDiv.style.height = "100%";
-                    Plotly.Plots.resize(innerChartDiv);
+                if (innerDiv) {
+                    innerDiv.style.width = "100%";
+                    innerDiv.style.height = "100%";
+                    Plotly.Plots.resize(innerDiv);
                 }
             };
 
@@ -165,8 +145,6 @@ function redrawCharts(allData) {
             const chartDiv = document.createElement("div");
             chartDiv.style.height = "90%";
             chartDiv.style.width = "100%";
-            chartDiv.style.position = "relative";
-            chartDiv.style.zIndex = "1"; // chart below header/buttons
             container.appendChild(chartDiv);
 
             chartDataFunc(chartDiv);
@@ -178,7 +156,11 @@ function redrawCharts(allData) {
                     container.classList.add("full-screen");
                     focusedChart = container;
                     document.body.classList.add("full-screen-active");
-                    Plotly.Plots.resize(chartDiv);
+                    if (chartDiv) {
+                        chartDiv.style.width = "100%";
+                        chartDiv.style.height = "100%";
+                        Plotly.Plots.resize(chartDiv);
+                    }
                 }
             }, 0);
 
@@ -195,15 +177,9 @@ function redrawCharts(allData) {
             const trace_lower = { x: data.history_times, y: data.lower_band, type: "scatter", mode: "lines", name: "Lower Band", line: { color: "orange" } };
             const trace_anom = { x: data.anomaly_times, y: data.anomaly_values, mode: "markers", name: "Anomaly", marker: { color: "red", size: 8, symbol: "x" } };
 
-            const layout = {
-                autosize: true,
-                margin: { t: 40, b: 50, l: 50, r: 50 },
-                xaxis: { title: "Time" },
-                yaxis: { title: "RTP" },
-                showlegend: true
-            };
-
-            Plotly.newPlot(div, [trace_rtp, trace_ewma1, trace_ewma24, trace_ewma10, trace_upper, trace_lower, trace_anom], layout, { responsive: true, displayModeBar: true, modeBarButtonsToAdd: ['resetScale2d'] });
+            Plotly.newPlot(div, [trace_rtp, trace_ewma1, trace_ewma24, trace_ewma10, trace_upper, trace_lower, trace_anom],
+                { autosize: true, margin: { t: 40, b: 50, l: 50, r: 50 }, xaxis: { title: "Time" }, yaxis: { title: "RTP" }, showlegend: true },
+                { responsive: true, displayModeBar: true, modeBarButtonsToAdd: ['resetScale2d'] });
 
             const header = div.parentNode.querySelector(".chart-header");
             const existingTitle = header.querySelector(".chart-extra-title");
@@ -225,16 +201,9 @@ function redrawCharts(allData) {
         // --- Daily chart ---
         const chartDaily = createChartContainer("Daily RTP", div => {
             const trace_daily = { x: data.daily_times, y: data.daily_rtps, type: "scatter", mode: "lines+markers", name: "Daily RTP", line: { color: "blue" } };
-
-            const layout = {
-                autosize: true,
-                margin: { t: 40, b: 50, l: 50, r: 50 },
-                xaxis: { title: "Date" },
-                yaxis: { title: "RTP" },
-                showlegend: true
-            };
-
-            Plotly.newPlot(div, [trace_daily], layout, { responsive: true, displayModeBar: true, modeBarButtonsToAdd: ['resetScale2d'] });
+            Plotly.newPlot(div, [trace_daily],
+                { autosize: true, margin: { t: 40, b: 50, l: 50, r: 50 }, xaxis: { title: "Date" }, yaxis: { title: "RTP" }, showlegend: true },
+                { responsive: true, displayModeBar: true, modeBarButtonsToAdd: ['resetScale2d'] });
 
             const header = div.parentNode.querySelector(".chart-header");
             const existingTitle = header.querySelector(".chart-extra-title");
@@ -263,15 +232,9 @@ function redrawCharts(allData) {
                 fill: "toself", fillcolor: "rgba(0,255,0,0.2)", line: { color: "transparent" }, name: "Forecast Band"
             };
 
-            const layout = {
-                autosize: true,
-                margin: { t: 40, b: 50, l: 50, r: 50 },
-                xaxis: { title: "Time" },
-                yaxis: { title: "RTP" },
-                showlegend: true
-            };
-
-            Plotly.newPlot(div, [trace_obs, trace_fc, trace_band], layout, { responsive: true, displayModeBar: true, modeBarButtonsToAdd: ['resetScale2d'] });
+            Plotly.newPlot(div, [trace_obs, trace_fc, trace_band],
+                { autosize: true, margin: { t: 40, b: 50, l: 50, r: 50 }, xaxis: { title: "Time" }, yaxis: { title: "RTP" }, showlegend: true },
+                { responsive: true, displayModeBar: true, modeBarButtonsToAdd: ['resetScale2d'] });
 
             const header = div.parentNode.querySelector(".chart-header");
             const existingTitle = header.querySelector(".chart-extra-title");
@@ -305,10 +268,6 @@ pairSelect.value = selectedPair;
 pairSelect.addEventListener("change", () => {
     selectedPair = pairSelect.value;
     localStorage.setItem("selectedPair", selectedPair);
-    if (window.lastAllData) {
-        redrawCharts(window.lastAllData);
-    }
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ action: "refresh" }));
-    }
+    if (window.lastAllData) redrawCharts(window.lastAllData);
+    if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ action: "refresh" }));
 });
