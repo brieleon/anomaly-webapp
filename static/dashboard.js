@@ -90,6 +90,8 @@ function redrawCharts(allData) {
 
             const header = document.createElement("div");
             header.className = "chart-header";
+            header.style.position = "relative";
+            header.style.zIndex = "10"; // ensure buttons are above chart
             const titleEl = document.createElement("span");
             titleEl.className = "chart-title";
             titleEl.textContent = title;
@@ -98,6 +100,7 @@ function redrawCharts(allData) {
             const btn = document.createElement("button");
             btn.className = "focus-button";
             btn.textContent = "Focus";
+            btn.style.zIndex = "11"; // always above chart
             btn.onclick = () => {
                 // If there's a focused chart, unfocus it first
                 if (focusedChart) {
@@ -150,6 +153,8 @@ function redrawCharts(allData) {
             const chartDiv = document.createElement("div");
             chartDiv.style.height = "90%";
             chartDiv.style.width = "100%";
+            chartDiv.style.position = "relative";
+            chartDiv.style.zIndex = "1"; // chart below header/buttons
             container.appendChild(chartDiv);
 
             chartDataFunc(chartDiv);
@@ -160,7 +165,7 @@ function redrawCharts(allData) {
                 if (focusedKey === key && focusedChartType === chartType) {
                     container.classList.add("full-screen");
                     focusedChart = container;
-                    document.body.classList.add("full-screen-active"); // ✅ fixed
+                    document.body.classList.add("full-screen-active");
                     Plotly.Plots.resize(chartDiv);
                 }
             }, 0);

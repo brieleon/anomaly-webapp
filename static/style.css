@@ -1,142 +1,138 @@
-/* General Body */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow: auto;
+/* --- General Body --- */
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 10px; 
+    text-align: center; /* center h1 and selector-container */
 }
 
-/* Dashboard Title */
+/* --- Dashboard Title --- */
 h1 {
-    font-size: 2.5em;
-    text-align: center;
-    margin-top: 20px;
+    font-size: 2.5em; /* bigger dashboard title */
+    margin-bottom: 20px;
 }
 
-/* Selector Container */
+/* --- Selector Container --- */
 .selector-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
-    font-size: 32px;
+    display: flex;            /* horizontal layout */
+    align-items: center;      /* vertical alignment */
+    justify-content: center;  /* center horizontally */
+    gap: 20px;                /* space between label and select */
+    margin-bottom: 30px;      /* spacing below selector */
+    font-size: 32px;          /* double default size */
 }
 
 .selector-container label,
 .selector-container select {
-    font-size: 1em;
+    font-size: 1em;           /* inherit container font size */
 }
 
 .selector-container select {
-    padding: 10px 15px;
+    padding: 10px 15px;       /* bigger clickable area */
 }
 
-/* Chart Row (flex container) */
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+/* --- Chart Row --- */
+.row { 
+    display: flex; 
+    margin-bottom: 20px; 
+    gap: 10px; 
 }
 
-/* Chart Container */
-.chart {
-    flex: 1;
-    min-width: 350px;
-    max-width: 600px;
-    position: relative;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
+/* --- Chart Container --- */
+.chart { 
+    flex: 1; 
+    border: 1px solid #ccc; 
+    padding: 5px; 
+    position: relative; 
+    height: 400px; 
     transition: all 0.3s ease;
-    box-sizing: border-box;
 }
 
-/* Focused Chart (Fullscreen Mode) */
-.chart.full-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #fff;
-    z-index: 1000;
-    border-radius: 0;
-    margin: 0;
+/* --- Chart Header --- */
+.chart-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 5px; 
 }
 
-/* Chart Header (Title and Focus Button) */
-.chart-header {
+.chart-title { 
+    font-weight: bold; 
+    font-size: 18px;
+}
+
+/* --- Focus Button --- */
+.focus-button { 
+    padding: 6px 15px; 
+    font-size: 18px; 
+    border-radius: 6px; 
+    cursor: pointer;
+}
+
+/* --- Fullscreen Chart --- */
+.full-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    background: white !important;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: absolute;
-    top: 10px;
-    left: 20px;
-    right: 20px;
-    z-index: 10; /* 🔑 keep header/buttons clickable above Plotly */
+    flex-direction: column;
+    transition: all 0.3s ease;
 }
 
-.focus-button {
-    position: relative;
-    z-index: 11; /* 🔑 ensures button is on top */
+.full-screen .chart {
+    flex: 1;
+    height: 100% !important; /* fill fullscreen height */
+    margin: 0 !important;
+    border: none !important;
+    padding: 10px !important;
 }
 
-.chart-title {
-    font-size: 18px;
-    font-weight: bold;
+.full-screen .chart-header {
+    flex: none;
+    height: 40px;
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-bottom: 1px solid #ddd;
 }
 
-.focus-button:hover {
-    background-color: #0056b3;
+.full-screen .chart > div:last-child {
+    flex: 1;
+    height: auto !important;
 }
 
-/* Extra Title (Appears when chart is focused) */
-.chart-extra-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    position: absolute;
-    top: 5px;
-    left: 50%;
-    transform: translateX(-50%);
+/* --- Plotly Modebar --- */
+.js-plotly-plot .modebar-btn svg {
+    width: 30px !important;
+    height: 30px !important;
 }
 
-/* Plotly Chart Styling */
-.chart div {
-    width: 100%;
-    height: 100%;
-    min-height: 300px;
+.js-plotly-plot .modebar-btn {
+    margin: 3px !important;
 }
 
-/* Media Queries for Responsiveness 
-@media (max-width: 768px) {
-    .selector-container {
-        flex-direction: column;
-    }
-
-    .row {
-        flex-direction: column;
-    }
-
-    .chart {
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+.js-plotly-plot .modebar {
+    top: 10px !important;
 }
-*/
 
-/* Prevent Scrolling When Focused */
-body.full-screen-active {
-    overflow: hidden;
+/* --- Plotly Modebar Positioning in Fullscreen --- */
+.full-screen .js-plotly-plot .modebar {
+    top: 10px !important;        /* 10px from top of fullscreen */
+    right: 10px !important;      /* 10px from right edge */
+    left: auto !important;       /* override any left positioning */
+    z-index: 1100 !important;    /* above chart and header */
 }
-.chart:not(.full-screen) {
-    width: auto !important;
-    height: 400px !important;
+
+/* Optional: Slightly smaller buttons in fullscreen for neatness */
+.full-screen .js-plotly-plot .modebar-btn svg {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.full-screen .js-plotly-plot .modebar-btn {
+    margin: 2px !important;
 }
