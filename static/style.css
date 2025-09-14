@@ -79,22 +79,17 @@ h1 {
     top: 10px;
     left: 20px;
     right: 20px;
+    z-index: 10; /* 🔑 keep header/buttons clickable above Plotly */
+}
+
+.focus-button {
+    position: relative;
+    z-index: 11; /* 🔑 ensures button is on top */
 }
 
 .chart-title {
     font-size: 18px;
     font-weight: bold;
-}
-
-.focus-button {
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s;
 }
 
 .focus-button:hover {
