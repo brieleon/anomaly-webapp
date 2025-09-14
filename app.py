@@ -1,5 +1,5 @@
 from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import json, redis, asyncio
 import os
@@ -12,23 +12,24 @@ from prophet import Prophet
 
 
 app = FastAPI()
+app.mount("/webapp/static", StaticFiles(directory="static"), name="static")
 
 # --- Redis ---
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = int(os.getenv("REDIS_PORT", 6379))
 rdb = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
 
-# --- Mount static files ---
-#app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/webapp/static", StaticFiles(directory="static"), name="static")
-
-
 # --- Serve HTML template ---
-@app.get("/")
+@app.get("/webapp", response_class=HTMLResponse)
 async def get_dashboard():
     with open("templates/dashboard.html") as f:
         html_content = f.read()
     return HTMLResponse(html_content)
+
+# Redirect / to /webapp
+@app.get("/", include_in_schema=False)
+async def root_redirect():
+    return RedirectResponse(url="/webapp")
 
 # --- WebSocket endpoint remains the same ---
 @app.websocket("/ws")
