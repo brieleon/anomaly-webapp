@@ -102,19 +102,23 @@ function redrawCharts(allData) {
             btn.textContent = "Focus";
             btn.style.zIndex = "11"; // always above chart
             btn.onclick = () => {
+                // If there's a focused chart, unfocus it first
                 if (focusedChart) {
-                    // Unfocus previous chart
                     focusedChart.classList.remove("full-screen");
 
-                    // Restore original dimensions
+                    // Restore all original inline styles
                     focusedChart.style.width = focusedChart.dataset.originalWidth;
                     focusedChart.style.height = focusedChart.dataset.originalHeight;
                     focusedChart.style.flex = focusedChart.dataset.originalFlex;
+                    focusedChart.style.margin = focusedChart.dataset.originalMargin;
+                    focusedChart.style.padding = focusedChart.dataset.originalPadding;
+                    focusedChart.style.border = focusedChart.dataset.originalBorder;
+                    focusedChart.style.zIndex = "";
 
                     const prevInnerChartDiv = focusedChart.querySelector(".chart > div:last-child");
                     if (prevInnerChartDiv) Plotly.Plots.resize(prevInnerChartDiv);
 
-                    // If clicking the same chart, just unfocus and return
+                    // If clicking the currently focused chart, just unfocus and return
                     if (focusedChart === container) {
                         focusedChart = null;
                         focusedKey = null;
@@ -131,16 +135,18 @@ function redrawCharts(allData) {
 
                 // Focus this chart
                 focusedChart = container;
-                // Store original flex and dimensions
-                focusedChart.dataset.originalWidth = container.style.width || container.offsetWidth + "px";
-                focusedChart.dataset.originalHeight = container.style.height || container.offsetHeight + "px";
-                focusedChart.dataset.originalFlex = container.style.flex || "1";
 
+                // Store all relevant inline styles before focus
+                focusedChart.dataset.originalWidth = container.style.width || "";
+                focusedChart.dataset.originalHeight = container.style.height || "";
+                focusedChart.dataset.originalFlex = container.style.flex || "";
+                focusedChart.dataset.originalMargin = container.style.margin || "";
+                focusedChart.dataset.originalPadding = container.style.padding || "";
+                focusedChart.dataset.originalBorder = container.style.border || "";
+
+                // Apply fullscreen styles
+                focusedChart.style.flex = "none";
                 container.classList.add("full-screen");
-                container.style.width = "100%";
-                container.style.height = "100%";
-                container.style.flex = "none";
-
                 focusedKey = key;
                 focusedChartType = chartType;
                 document.body.classList.add("full-screen-active");
@@ -152,7 +158,6 @@ function redrawCharts(allData) {
                     Plotly.Plots.resize(innerChartDiv);
                 }
             };
-
 
             header.appendChild(btn);
             container.appendChild(header);
