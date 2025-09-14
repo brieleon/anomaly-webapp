@@ -94,11 +94,14 @@ function redrawCharts(allData) {
                     focusedChart.style.border = focusedChart.dataset.originalBorder;
                     focusedChart.style.zIndex = "";
 
-                    // Restore inner Plotly div styles
+                    // Force inner Plotly div to fill container
                     if (innerChartDiv) {
-                        innerChartDiv.style.width = innerChartDiv.dataset.originalWidth;
-                        innerChartDiv.style.height = innerChartDiv.dataset.originalHeight;
-                        Plotly.Plots.resize(innerChartDiv);
+                        // Small delay ensures container has reflowed
+                        setTimeout(() => {
+                            innerChartDiv.style.width = "100%";
+                            innerChartDiv.style.height = "100%";
+                            Plotly.Plots.resize(innerChartDiv);
+                        }, 0);
                     }
 
                     // If clicking the currently focused chart, just unfocus and return
@@ -127,12 +130,6 @@ function redrawCharts(allData) {
                 focusedChart.dataset.originalPadding = container.style.padding || "";
                 focusedChart.dataset.originalBorder = container.style.border || "";
 
-                // Store original inner Plotly div styles
-                if (innerChartDiv) {
-                    innerChartDiv.dataset.originalWidth = innerChartDiv.style.width || "";
-                    innerChartDiv.dataset.originalHeight = innerChartDiv.style.height || "";
-                }
-
                 // Apply fullscreen styles
                 focusedChart.style.flex = "none";
                 container.classList.add("full-screen");
@@ -146,6 +143,7 @@ function redrawCharts(allData) {
                     Plotly.Plots.resize(innerChartDiv);
                 }
             };
+
 
             header.appendChild(btn);
             container.appendChild(header);
