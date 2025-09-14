@@ -81,11 +81,13 @@ function redrawCharts(allData) {
             btn.onclick = () => {
                 const innerChartDiv = container.querySelector(".chart > div:last-child");
 
-                // If there's a focused chart, unfocus it first
+                // -----------------------------
+                // UNFOCUS: Restore previous focused chart
+                // -----------------------------
                 if (focusedChart) {
                     focusedChart.classList.remove("full-screen");
 
-                    // Restore container's original styles
+                    // Restore container styles to original values
                     focusedChart.style.width = focusedChart.dataset.originalWidth;
                     focusedChart.style.height = focusedChart.dataset.originalHeight;
                     focusedChart.style.flex = focusedChart.dataset.originalFlex;
@@ -94,17 +96,17 @@ function redrawCharts(allData) {
                     focusedChart.style.border = focusedChart.dataset.originalBorder;
                     focusedChart.style.zIndex = "";
 
-                    // Force inner Plotly div to fill container
-                    if (innerChartDiv) {
-                        // Small delay ensures container has reflowed
-                        setTimeout(() => {
-                            innerChartDiv.style.width = "100%";
-                            innerChartDiv.style.height = "100%";
-                            Plotly.Plots.resize(innerChartDiv);
-                        }, 0);
+                    // -----------------------------
+                    // FIX: Restore inner Plotly div properly
+                    // This ensures the chart content and modebar return to correct size and alignment
+                    // -----------------------------
+                    if (innerChartDiv && innerChartDiv.dataset.originalWidth) {
+                        innerChartDiv.style.width = innerChartDiv.dataset.originalWidth;
+                        innerChartDiv.style.height = innerChartDiv.dataset.originalHeight;
+                        Plotly.Plots.resize(innerChartDiv); // <-- critical: resize Plotly after restoring
                     }
 
-                    // If clicking the currently focused chart, just unfocus and return
+                    // If clicking the currently focused chart, just unfocus and stop
                     if (focusedChart === container) {
                         focusedChart = null;
                         focusedKey = null;
@@ -113,16 +115,19 @@ function redrawCharts(allData) {
                         return;
                     }
 
+                    // Clear focus for other cases
                     focusedChart = null;
                     focusedKey = null;
                     focusedChartType = null;
                     document.body.classList.remove("full-screen-active");
                 }
 
-                // Focus this chart
+                // -----------------------------
+                // FOCUS: Apply fullscreen to this chart
+                // -----------------------------
                 focusedChart = container;
 
-                // Store original container styles
+                // Store container styles before focusing
                 focusedChart.dataset.originalWidth = container.style.width || "";
                 focusedChart.dataset.originalHeight = container.style.height || "";
                 focusedChart.dataset.originalFlex = container.style.flex || "";
@@ -130,17 +135,26 @@ function redrawCharts(allData) {
                 focusedChart.dataset.originalPadding = container.style.padding || "";
                 focusedChart.dataset.originalBorder = container.style.border || "";
 
-                // Apply fullscreen styles
+                // Store inner Plotly div styles before focusing
+                if (innerChartDiv) {
+                    innerChartDiv.dataset.originalWidth = innerChartDiv.style.width || "";
+                    innerChartDiv.dataset.originalHeight = innerChartDiv.style.height || "";
+                }
+
+                // Apply fullscreen container styles
                 focusedChart.style.flex = "none";
                 container.classList.add("full-screen");
                 focusedKey = key;
                 focusedChartType = chartType;
                 document.body.classList.add("full-screen-active");
 
+                // -----------------------------
+                // FIX: Ensure inner Plotly div fills container
+                // -----------------------------
                 if (innerChartDiv) {
                     innerChartDiv.style.width = "100%";
                     innerChartDiv.style.height = "100%";
-                    Plotly.Plots.resize(innerChartDiv);
+                    Plotly.Plots.resize(innerChartDiv); // <-- critical: resize Plotly after fullscreen
                 }
             };
 
